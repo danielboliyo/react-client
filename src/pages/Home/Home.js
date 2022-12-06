@@ -1,14 +1,46 @@
 import React, { Fragment, useState } from 'react';
 import TopBar from 'components/TopBar';
-import { Box, Button, CardMedia, Container } from '@mui/material';
-import { connectWeb3, sendVote, changeStatusConsulation } from 'services/web3';
+import { Box, Button, CardMedia, Container, InputBase } from '@mui/material';
+import {
+    connectWeb3,
+    sendVote,
+    changeStatusConsulation,
+    authorizedWallet
+} from 'services/web3';
+import { StyledError } from 'components/Error/styled';
 
 const Home = () => {
     const [account, setAccount] = useState(null);
+    const [errors, setErrors] = useState({});
+    const [sucess, setSucess] = useState({});
+    const [authWallet, setAuthWallet] = useState('');
+    const handleAuthorizedWallet = (wallet, account) => {
+        setErrors(null);
+        setSucess(null);
+        authorizedWallet(wallet, account)
+            .then((result) => {
+                console.log('authorized', setSucess, result);
+            })
+            .catch((error) => {
+                console.log('authorized error', error, setErrors);
+                setErrors({ authorize: error.message });
+            });
+    }
     const handleSetVote = (vote) => {
-        sendVote(vote, account.account);
+        setErrors(null);
+        setSucess(null);
+        sendVote(vote, account.account)
+            .then((result) => {
+                console.log('vote', result);
+            })
+            .catch((error) => {
+                console.log('vote error', error);
+                setErrors({ voted: error.message });
+            });
     };
     const handleConnectWallet = () => {
+        setErrors(null);
+        setSucess(null);
         connectWeb3()
             .then(({ account, shortAccount }) => {
                 setAccount({
@@ -17,7 +49,8 @@ const Home = () => {
                 });
             })
             .catch((error) => {
-                console.log(error);
+                console.log('connect error', error);
+                setErrors({ connectWallet: error.message });
             });
     };
     return (
@@ -47,12 +80,12 @@ const Home = () => {
                     </h1>
                 </Container>
                 <Container maxWidth="sm">
-                    {account && (
+                    {account && account.account && (
                         <Box sx={{ textalign: 'center' }}>
                             <span>Tu cuenta: {account.shortAccount}</span>
                         </Box>
                     )}
-                    {account && (
+                    {account && account.account && (
                         <Box display="flex" justifyContent="space-between" width="100%" sx={{ mt: 5 }}>
                             <Button type="button" variant="contained" onClick={()=>handleSetVote(true)}>
                                 Si
@@ -62,7 +95,7 @@ const Home = () => {
                             </Button>
                         </Box>
                     )}
-                    {account && (
+                    {account && account.account && (
                         <Box display="flex" justifyContent="space-between" width="100%" sx={{ mt: 5 }}>
                             <Button type="button" variant="contained" onClick={()=>changeStatusConsulation(account.account)}>
                                 Activar, desactivar votacion
@@ -76,8 +109,40 @@ const Home = () => {
                             </Button>
                         </Box>
                     )}
+                    {errors && errors.connectWallet && (
+                        <StyledError>{errors.connectWallet}</StyledError>
+                    )}
+                    {errors && errors.voted && (
+                        <StyledError>{errors.voted}</StyledError>
+                    )}
+                    {errors && errors.authorize && (
+                        <StyledError>{errors.authorize}</StyledError>
+                    )}
+                    {sucess && (
+                        <Box>
+                            <span>Has gracias por tu voto</span>
+                        </Box>
+                    )}
                 </Container>
             </Box>
+            {account && account.account && (
+                <Container maxWidth="sm">
+                    <Box>
+                        <InputBase
+                            value={authWallet}
+                            onChange={(e) => setAuthWallet(e.target.value)}
+                            sx={{ border: '1px solid #ced4da', borderRadius: '4px', p: '5px', width: '100%' }}
+                        />
+                    </Box>
+                    <Button
+                        type="button"
+                        variant="contained"
+                        onClick={()=>handleAuthorizedWallet(authWallet, account.account)}
+                    >
+                        Authorize wallet
+                    </Button>
+                </Container>
+            )}
             <footer style={{ marginTop: '50px' }}>
                 <small>
                     El voto es libre y secreto. No se puede obligar a nadie a votar ni a

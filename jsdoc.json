@@ -1,0 +1,14 @@
+{
+    "source": {
+        "include": [
+            "./src",
+            "./src/services/web3.js"
+        ],
+        "includePattern": ".+\\.js(doc|x)?$",
+        "exclude": "node_modules/|docs"
+    },
+    "plugins": [],
+    "opts": {
+        "destination": "docs"
+    }
+}
