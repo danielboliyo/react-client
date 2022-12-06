@@ -9,6 +9,6 @@
     },
     "plugins": [],
     "opts": {
-        "destination": "docs"
+        "destination": "./docs"
     }
 }
