@@ -5,10 +5,8 @@ import abi from 'contracts/abi';
 const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
 
 /**
- * ConnectWeb3() is a function that returns an object with two properties: account and shortAccount.
- * The account property is the user's Ethereum address, and the shortAccount property is the first 5
- * characters of the user's Ethereum address, followed by 3 dots, followed by the last 6 characters of
- * the user's Ethereum address.
+ * It connects to the user's wallet, and returns the user's account address and a shortened version of
+ * the address.
  * @returns An object with two properties: account and shortAccount.
  */
 export const connectWeb3 = async () => {
@@ -96,12 +94,13 @@ export const getAllVotes = async () => {
     }
 };
 
+
 /**
- * This function will take a wallet address and an account address and will authorize the wallet
- * address to be able to send and receive tokens from the contract address.
- * @param {String} wallet - The wallet address you want to authorize
- * @param {String} account - The address of the account that is authorizing the wallet.
- * @returns The transaction hash.
+ * It takes a wallet address and an account address and authorizes the wallet address to be used by the
+ * account address
+ * @param wallet - 0x9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9
+ * @param account - The address of the account that is authorizing the wallet.
+ * @returns The result of the transaction.
  */
 export const authorizedWallet = async (wallet, account) => {
     try {
