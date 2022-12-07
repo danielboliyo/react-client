@@ -5,7 +5,8 @@ import {
     connectWeb3,
     sendVote,
     changeStatusConsulation,
-    authorizedWallet
+    authorizedWallet,
+    getGasPrice
 } from 'services/web3';
 import { StyledError } from 'components/Error/styled';
 
@@ -14,6 +15,31 @@ const Home = () => {
     const [errors, setErrors] = useState({});
     const [sucess, setSucess] = useState({});
     const [authWallet, setAuthWallet] = useState('');
+    const [gasPrice, setGasPrice] = useState(null);
+    const handleChangeStatus = async () => {
+        setErrors(null);
+        setSucess(null);
+        changeStatusConsulation(account.account)
+            .then((result) => {
+                console.log('change status', result);
+                setSucess({ changeStatus: result });
+            })
+            .catch((error) => {
+                console.log('change status error', error);
+                setErrors({ changeStatus: error.message });
+            });
+    };
+    const handleGasPrice = () => {
+        getGasPrice()
+            .then((result) => {
+                console.log('gas price', result);
+                setGasPrice(result);
+            })
+            .catch((error) => {
+                console.log('gas price error', error);
+                setErrors({ gasPrice: error.message });
+            });
+    };
     const handleAuthorizedWallet = (wallet, account) => {
         setErrors(null);
         setSucess(null);
@@ -31,7 +57,7 @@ const Home = () => {
         setSucess(null);
         sendVote(vote, account.account)
             .then((result) => {
-                console.log('vote', result);
+                console.log('vote success', result);
             })
             .catch((error) => {
                 console.log('vote error', error);
@@ -97,8 +123,8 @@ const Home = () => {
                     )}
                     {account && account.account && (
                         <Box display="flex" justifyContent="space-between" width="100%" sx={{ mt: 5 }}>
-                            <Button type="button" variant="contained" onClick={()=>changeStatusConsulation(account.account)}>
-                                Activar, desactivar votacion
+                            <Button type="button" variant="contained" onClick={()=>handleChangeStatus(account.account)}>
+                                Activar / desactivar votacion
                             </Button>
                         </Box>
                     )}
@@ -118,9 +144,20 @@ const Home = () => {
                     {errors && errors.authorize && (
                         <StyledError>{errors.authorize}</StyledError>
                     )}
+                    {errors && errors.changeStatus && (
+                        <StyledError>{errors.changeStatus}</StyledError>
+                    )}
                     {sucess && (
-                        <Box>
+                        <Box display="none">
                             <span>Has gracias por tu voto</span>
+                        </Box>
+                    )}
+                    {sucess && sucess.changeStatus && (
+                        <Box>
+                            <Box>{`https://goerli.etherscan.io/tx/${sucess.changeStatus.transactionHash}`}</Box>
+                            <span>
+                                {/* {sucess.changeStatus.events.ConsultationClosed} */}
+                            </span>
                         </Box>
                     )}
                 </Container>
@@ -141,13 +178,20 @@ const Home = () => {
                     >
                         Authorize wallet
                     </Button>
+                    <Button
+                        type="button"
+                        variant="contained"
+                        onClick={handleGasPrice}
+                    >
+                        Gas price
+                    </Button>
+                    {gasPrice && <Box>{gasPrice} Gwei</Box>}
                 </Container>
             )}
             <footer style={{ marginTop: '50px' }}>
                 <small>
                     El voto es libre y secreto. No se puede obligar a nadie a votar ni a
                     declarar por quien votó.
-                    
                 </small>
             </footer>
         </Fragment>

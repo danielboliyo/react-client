@@ -36,7 +36,6 @@ export const sendVote = async (vote, account) => {
         const web3 = new Web3(provider);
         const contract = new web3.eth.Contract(abi, contractAddress);
         const gas = await contract.methods.vote(vote).estimateGas({ from: account });
-        //console.log('gas', gas);
         const gasPrice = await web3.eth.getGasPrice();
         const tx = {
             from: account,
@@ -46,8 +45,15 @@ export const sendVote = async (vote, account) => {
         const result = await contract.methods.vote(vote).send(tx);
         return result;
     } catch (error) {
-        //console.log(error);
-        throw new Error(error);
+        const parsedError = JSON.stringify(error.message);
+        if (parsedError.includes('not authorized')) {
+            const rgx = /(?<=execution reverted: )(.*)(?=\\n{)/g;
+            const rgxResult = rgx.exec(parsedError);
+            //return Array.isArray(rgxResult) ? rgxResult[0] : rgxResult;
+            console.log(Array.isArray(rgxResult) ? rgxResult[0] : rgxResult);
+            throw new Error(Array.isArray(rgxResult) ? rgxResult[0] : rgxResult);
+        }
+        throw new Error('unkkown error');
     }
 };
 
@@ -73,7 +79,15 @@ export const changeStatusConsulation = async (account) => {
         return result;
     } catch (error) {
         //console.log(error);
-        throw new Error(error.message);
+        const parsedError = JSON.stringify(error.message);
+        if (parsedError.includes('deployer')) {
+            const rgx = /(?<=execution reverted: )(.*)(?=\\n{)/g;
+            const rgxResult = rgx.exec(parsedError);
+            //return Array.isArray(rgxResult) ? rgxResult[0] : rgxResult;
+            console.log(Array.isArray(rgxResult) ? rgxResult[0] : rgxResult);
+            throw new Error(Array.isArray(rgxResult) ? rgxResult[0] : rgxResult);
+        }
+        throw new Error('unkkown error');
     }
 };
 
@@ -90,7 +104,15 @@ export const getAllVotes = async () => {
         return result;
     } catch (error) {
         //console.log(error);
-        throw new Error(error.message);
+        const parsedError = JSON.stringify(error.message);
+        if (parsedError.includes('not authorized')) {
+            const rgx = /(?<=execution reverted: )(.*)(?=\\n{)/g;
+            const rgxResult = rgx.exec(parsedError);
+            //return Array.isArray(rgxResult) ? rgxResult[0] : rgxResult;
+            console.log(Array.isArray(rgxResult) ? rgxResult[0] : rgxResult);
+            throw new Error(Array.isArray(rgxResult) ? rgxResult[0] : rgxResult);
+        }
+        throw new Error('unkkown error');
     }
 };
 
@@ -111,6 +133,51 @@ export const authorizedWallet = async (wallet, account) => {
         return result;
     } catch (error) {
         //console.log(error);
-        throw new Error(error.message);
+        const parsedError = JSON.stringify(error.message);
+        if (parsedError.includes('deployer')) {
+            const rgx = /(?<=execution reverted: )(.*)(?=\\n{)/g;
+            const rgxResult = rgx.exec(parsedError);
+            //return Array.isArray(rgxResult) ? rgxResult[0] : rgxResult;
+            console.log(Array.isArray(rgxResult) ? rgxResult[0] : rgxResult);
+            throw new Error(Array.isArray(rgxResult) ? rgxResult[0] : rgxResult);
+        }
+        throw new Error('unkkown error');
     }
-}; 
+};
+
+/**
+ * It gets the gas price from the blockchain.
+ */
+export const getGasPrice = async () => {
+    try {
+        const provider = await detectEthereumProvider();
+        const web3 = new Web3(provider);
+        const gasPrice = await web3.eth.getGasPrice();
+        const gasPriceInGwei = web3.utils.fromWei(gasPrice, 'gwei');
+        return gasPriceInGwei;
+    } catch (error) {
+        //console.log(error);
+        const parsedError = JSON.stringify(error.message);
+        if (parsedError.includes('not authorized')) {
+            const rgx = /(?<=execution reverted: )(.*)(?=\\n{)/g;
+            const rgxResult = rgx.exec(parsedError);
+            //return Array.isArray(rgxResult) ? rgxResult[0] : rgxResult;
+            console.log(Array.isArray(rgxResult) ? rgxResult[0] : rgxResult);
+            throw new Error(Array.isArray(rgxResult) ? rgxResult[0] : rgxResult);
+        }
+        throw new Error('unkkown error');
+    }
+};
+
+/* export const getStatusConsultation = async () => {
+    try {
+        const provider = await detectEthereumProvider();
+        const web3 = new Web3(provider);
+        const contract = new web3.eth.Contract(abi, contractAddress);
+        const result = await contract.methods.getStatusConsultation().call();
+        return result;
+    } catch (error) {
+        //console.log(error);
+        throw new Error('unkkown error');
+    }
+}; */
