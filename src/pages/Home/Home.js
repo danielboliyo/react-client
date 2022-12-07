@@ -16,6 +16,7 @@ const Home = () => {
     const [sucess, setSucess] = useState({});
     const [authWallet, setAuthWallet] = useState('');
     const [gasPrice, setGasPrice] = useState(null);
+
     const handleChangeStatus = async () => {
         setErrors(null);
         setSucess(null);
@@ -46,6 +47,7 @@ const Home = () => {
         authorizedWallet(wallet, account)
             .then((result) => {
                 console.log('authorized', setSucess, result);
+                setSucess({ authorize: result });
             })
             .catch((error) => {
                 console.log('authorized error', error, setErrors);
@@ -58,6 +60,7 @@ const Home = () => {
         sendVote(vote, account.account)
             .then((result) => {
                 console.log('vote success', result);
+                setSucess({ voted: result });
             })
             .catch((error) => {
                 console.log('vote error', error);
@@ -155,6 +158,22 @@ const Home = () => {
                     {sucess && sucess.changeStatus && (
                         <Box>
                             <Box>{`${process.env.REACT_APP_SCAN_URL}${sucess.changeStatus.transactionHash}`}</Box>
+                            <span>
+                                {/* {sucess.changeStatus.events.ConsultationClosed} */}
+                            </span>
+                        </Box>
+                    )}
+                    {sucess && sucess.authorize && (
+                        <Box>
+                            <Box>{`${process.env.REACT_APP_SCAN_URL}${sucess.authorize.transactionHash}`}</Box>
+                            <span>
+                                {/* {sucess.changeStatus.events.ConsultationClosed} */}
+                            </span>
+                        </Box>
+                    )}
+                    {sucess && sucess.voted && (
+                        <Box>
+                            <Box>{`${process.env.REACT_APP_SCAN_URL}${sucess.voted.transactionHash}`}</Box>
                             <span>
                                 {/* {sucess.changeStatus.events.ConsultationClosed} */}
                             </span>
