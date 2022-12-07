@@ -154,7 +154,7 @@ const Home = () => {
                     )}
                     {sucess && sucess.changeStatus && (
                         <Box>
-                            <Box>{`https://goerli.etherscan.io/tx/${sucess.changeStatus.transactionHash}`}</Box>
+                            <Box>{`${process.env.REACT_APP_SCAN_URL}${sucess.changeStatus.transactionHash}`}</Box>
                             <span>
                                 {/* {sucess.changeStatus.events.ConsultationClosed} */}
                             </span>

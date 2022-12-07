@@ -22,6 +22,12 @@ contract Consultation {
         consultationStatus = !consultationStatus;
         emit ConsultationClosed(consultationStatus);
     }
+    function transferAdmin (address _wallet) public onlyDeployer() {
+        deployer = _wallet;
+    }
+    function getStatusConsultation () public view returns(bool) {
+        return consultationStatus;
+    }
     function authorizeWallet (address _wallet) public onlyDeployer() {
         walletAuthorized[_wallet] = true;
         emit AddAuthorizedWallet(_wallet);
